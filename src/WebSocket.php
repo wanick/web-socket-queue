@@ -122,7 +122,7 @@ class WebSocket
         $scheme = $scheme == 'wss' ? 'ssl' : 'tcp';
         $address = $scheme . '://' . $host . ':' . $port;
 
-        $this->socket = stream_socket_client($address, $errorNumber, $errorString, 0, $flags, isset($this->options['context']) ? $this->options['context'] : null);
+        $this->socket = stream_socket_client($address, $errorNumber, $errorString, $this->options['socket-connection-timeout'], $flags, isset($this->options['socket-context']) ? $this->options['socket-context'] : null);
 
         if (!$this->socket) {
             throw new Exception("{$errorString} ({$errorNumber})");
