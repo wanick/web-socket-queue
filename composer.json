@@ -1,0 +1,38 @@
+{
+    "name": "wanick/web-socket-queue",
+    "homepage": "https://gitlab.com/wanick/web-socket-queue",
+    "description": "PHP project for web sockets and Queue WebSockets",
+    "keywords": ["ws", "nats", "web socket", "SurrealDB"],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ivan Deina",
+            "homepage": "https://vk.com/wanick"
+        }
+    ],
+    "support": {
+        "issues": "https://gitlab.com/wanick/web-socket-queue/-/issuess"
+    },
+    "require": {
+        "php": ">=7.4.0",
+        "ext-json": "*"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Wanick\\WebSocketQueue\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Wanick\\WebSocketQueue\\Test\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-beta"
+        }
+    }
+}
