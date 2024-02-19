@@ -1,6 +1,6 @@
 {
     "name": "wanick/web-socket-queue",
-    "homepage": "https://gitlab.com/wanick/web-socket-queue",
+    "homepage": "https://github.com/wanick/web-socket-queue",
     "description": "PHP project for web sockets and Queue WebSockets",
     "keywords": ["ws", "nats", "web socket", "SurrealDB"],
     "type": "library",
@@ -12,7 +12,7 @@
         }
     ],
     "support": {
-        "issues": "https://gitlab.com/wanick/web-socket-queue/-/issuess"
+        "issues": "https://github.com/wanick/web-socket-queue/issues"
     },
     "require": {
         "php": ">=7.4.0",
@@ -32,7 +32,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-beta"
+            "dev-master": "0.3-beta"
         }
     }
 }

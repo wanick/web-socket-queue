@@ -8,20 +8,20 @@ abstract class Driver
 {
     private static $defaultOptions = [
         'ssl-verify' => false, 
+        'socket-connection-timeout' => 10,
     ];
     private $ws = null;
 
     public function __construct($url, $options = [])
     {
-        $computedOption = array_merge(self::$defaultOptions, $options);
-
-        $preparedOptions = [];
-        if ($computedOption['ssl-verify'] === false) {
+        $preparedOptions = array_merge(self::$defaultOptions, $options);
+        if ($preparedOptions['ssl-verify'] === false) {
             $context = stream_context_create();
             stream_context_set_option($context, 'ssl', 'verify_peer', false);
             stream_context_set_option($context, 'ssl', 'verify_peer_name', false);
     
-            $preparedOptions['context'] = $context;
+            $preparedOptions['socket-context'] = $context;
+            unset($preparedOptions['ssl-verify']);
         }
 
         $client = new WebSocket($url, array_merge($preparedOptions, $options));
