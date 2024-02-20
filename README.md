@@ -49,4 +49,4 @@ if ($nats) {
 }
 ```
 
-# TODO example  for PHP -> NATS -> SurrealDB
+# TODO example  for PHP -> NATS(SUB)-> SurrealDB(LIVE)
