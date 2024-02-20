@@ -17,8 +17,14 @@ class SurrealDriver extends Driver
     {
         foreach ($this->queue as &$task) {
             if ($task['status'] === 'new') {
-                // print(json_encode($task['data']). "\n");
-                $this->getWs()->send(1, json_encode($task['data']), 'text', true);
+                $data = $task['data'];
+                if ($data['method'] === 'live' && strpos($data['params'][0], 'LIVE') === 0) {
+                    // Меняем на query и дальше всё пойдет по логике live запроса
+                    $data['method'] = 'query';
+                }
+
+                // print(json_encode($data). "\n");
+                $this->getWs()->send(1, json_encode($data), 'text', true);
                 $task['status'] = $task['blocked'] ? 'await' : 'sent';
             }
 
@@ -48,6 +54,7 @@ class SurrealDriver extends Driver
                     throw new Exception('Что за ошибка не понятно!');
                 } else {
                     $task = &$this->queue[$payload['id']];
+                    if ($task['status'] !== 'live') $task['status'] = 'done';
                     $callback = $task['callback'];
 
                     // Вернулся uuid по LIVE запросу для него своя логика
@@ -58,7 +65,11 @@ class SurrealDriver extends Driver
                             $task['status'] = 'live';
 
                             unset($task['callback']);
-                            $this->queue[$payload['result']] = $task;
+                            if (is_string($payload['result'])) {
+                                $this->queue[$payload['result']] = $task;
+                            } else {
+                                $this->queue[$payload['result'][0]['result']] = $task;
+                            }
                         }
 
                         $callback(isset($payload['error']) ? 'ERROR' : 'CONNECT', isset($payload['error']) ?  $payload['error'] : $payload['result']);
@@ -102,6 +113,22 @@ class SurrealDriver extends Driver
     public function query(string $sql, $params = null, $callback = null, $blocked = false)
     {
         return $this->addTask('query', [$sql, $params], $callback, $blocked);
+    }
+
+    public function liveQuery(string $sql, $params = null, $callback = null, $blocked = false)
+    {
+        return $this->addTask('live', ['LIVE ' . $sql, $params], $callback, $blocked);
+    }
+
+    /**
+     * Add Live listener
+     */
+    public function liveListener($queryUuid, $callback = null)
+    {
+        if(isset($this->queue[$queryUuid])) {
+            $this->queue[$queryUuid]['watchers'][] = $callback;
+        }
+        return $this;
     }
 
     /**
