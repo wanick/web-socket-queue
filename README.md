@@ -8,11 +8,11 @@
 
 ```php
 
-use Wanick\WebSocketQueue\Drivers\NatsDriver;
+use Wanick\WebSocketQueue\Drivers\SurrealDriver;
 
 // link to RCP SurrealDB
 $url = 'wss://hostname:8080/rcp';
-$driver = new NatsDriver($url);
+$driver = new SurrealDriver($url);
 
 if ($driver) {
   $server->use($config['ns'], $config['db'])
