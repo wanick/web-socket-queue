@@ -12,10 +12,10 @@ use Wanick\WebSocketQueue\Drivers\SurrealDriver;
 
 // link to RCP SurrealDB
 $url = 'wss://hostname:8080/rcp';
-$driver = new SurrealDriver($url);
+$surrealDB = new SurrealDriver($url);
 
-if ($driver) {
-  $server->use($config['ns'], $config['db'])
+if ($surrealDB) {
+  $surrealDB->use($config['ns'], $config['db'])
     ->signin([
       "user" => $config['user'],
       "pass" => $config['pass'],
