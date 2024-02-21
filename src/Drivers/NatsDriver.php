@@ -9,7 +9,7 @@ class NatsDriver extends Driver
     private $queue = [];
 
     private $latest = 0;
-    const CRLF = chr(13).chr(10);
+    const CRLF = "\r\n";
 
     public function __construct($url, $options = [])
     {
