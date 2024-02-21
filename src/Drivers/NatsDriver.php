@@ -9,12 +9,10 @@ class NatsDriver extends Driver
     private $queue = [];
 
     private $latest = 0;
+    const CRLF = chr(13).chr(10);
 
     public function __construct($url, $options = [])
     {
-        if (!defined('CRLF')) {
-            define('CRLF', chr(13).chr(10));
-        }
         parent::__construct($url, $options);
     }
 
@@ -23,7 +21,7 @@ class NatsDriver extends Driver
         foreach ($this->queue as &$task) {
             if ($task['status'] === 'new') {
                 // print('->>' . $task['data']. "\n");
-                $this->getWs()->send(1, $task['data']. CRLF, 'binary', true);
+                $this->getWs()->send(1, $task['data']. self::CRLF, 'binary', true);
                 $task['status'] = 'sent';
             }
         }
@@ -40,7 +38,7 @@ class NatsDriver extends Driver
 
     public function message($final, $payload, $opcode, $masked)
     {
-        $list = explode(CRLF, $payload);
+        $list = explode(self::CRLF, $payload);
         $messages = [];
         while(!empty($list))
         {
@@ -136,14 +134,14 @@ class NatsDriver extends Driver
     public function ping(): void
     {
         // print("->>PING\n");
-        $this->getWs()->send(1, "PING".CRLF, 'binary', true);
+        $this->getWs()->send(1, "PING".self::CRLF, 'binary', true);
         $this->latest = time();
     }
 
     public function pong(): void
     {
         // print("->>PONG\n");
-        $this->getWs()->send(1, "PONG".CRLF, 'binary', true);
+        $this->getWs()->send(1, "PONG".self::CRLF, 'binary', true);
     }
 
     /**

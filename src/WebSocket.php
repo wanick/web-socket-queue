@@ -92,9 +92,6 @@ class WebSocket
                 $read = strlen($data);
                 throw new Exception("Broken frame, read {$read} of stated {$length} bytes.");
             }
-            if ($buffer === '') {
-                throw new Exception("Empty read; connection dead?");
-            }
             $data .= $buffer;
             $read = strlen($data);
         }
@@ -201,6 +198,7 @@ class WebSocket
 
     public function send($final, $payload, $opcode, $masked)
     {
+        // TODO Add logger for driver
         $this->pushFrame([
             $final, $payload, $opcode, $masked
         ]);
@@ -316,6 +314,7 @@ class WebSocket
 
     public function write(string $data): void
     {
+        // TODO add write buffer size
         $length = strlen($data);
         $written = fwrite($this->socket, $data);
 
