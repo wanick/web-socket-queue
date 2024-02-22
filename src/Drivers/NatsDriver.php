@@ -18,11 +18,15 @@ class NatsDriver extends Driver
 
     public function loop()
     {
-        foreach ($this->queue as &$task) {
+        foreach ($this->queue as $i => &$task) {
             if ($task['status'] === 'new') {
                 // print('->>' . $task['data']. "\n");
                 $this->getWs()->send(1, $task['data']. self::CRLF, 'binary', true);
                 $task['status'] = 'sent';
+            }
+
+            if ($task['method'] !== 'SUB') {
+                unset($this->queue[$i]);
             }
         }
         $this->autoPing(30);
@@ -102,8 +106,8 @@ class NatsDriver extends Driver
                     // TODO тут какая то ошибка
                     break;
                 case 'MSG':
-                    if (isset($this->queue[$message['subject']])) {
-                        $task = $this->queue[$message['subject']];
+                    if (isset($this->queue[$message['subject'].$message['sid']])) {
+                        $task = $this->queue[$message['subject'].$message['sid']];
     
                         $callback = $task['callback'];
                         if ($callback && is_callable($callback))
@@ -155,10 +159,11 @@ class NatsDriver extends Driver
             $data = ' ' . mb_strlen($params) . "\r\n" . $params;
         }
 
-        $this->queue[$name] = [
+        $this->queue[$name.$id] = [
             'status' => 'new',
             'callback' => $callback,
-            'data' => $method. ' ' . $name . $data
+            'data' => $method. ' ' . $name . $data,
+            'method' => $method,
         ];
 
         // ␍␊
