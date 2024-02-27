@@ -11,8 +11,7 @@
 use Wanick\WebSocketQueue\Drivers\SurrealDriver;
 
 // link to RCP SurrealDB
-$url = 'wss://hostname:8080/rcp';
-$surreal = new SurrealDriver($url);
+$surreal = new SurrealDriver('wss://hostname:8080/rcp');
 
 if ($surreal) {
   $surreal->use($config['ns'], $config['db'])
@@ -38,9 +37,8 @@ if ($surreal) {
 
 ```php
 use Wanick\WebSocketQueue\Drivers\NatsDriver;
-$url = 'wss://nats.server.com:8080/nats';
-$nats = new NatsDriver($url);
-
+// link to NATS Connection
+$nats = new NatsDriver('wss://nats.server.com:8080/nats');
 if ($nats) {
   $nats
     ->pub("EVENT_NAME", ['event' => 'test', 'data' => 123])
@@ -48,5 +46,52 @@ if ($nats) {
     ->exec();
 }
 ```
+# Example listening
 
-# TODO example  for PHP -> NATS(SUB)-> SurrealDB(LIVE)
+```php
+use Wanick\WebSocketQueue;
+
+$queue = new WebSocketQueue\Queue();
+$surreal = new SurrealDriver($url);
+// this $surreal use + signin 
+
+$nats = new NatsDriver($url);
+
+$nats->sub('ON-YOUR-CUSTOM-EVENT', null, function(string $result) use($surreal) {
+    $data = json_decode($result, true); // if you write in JSON format to NATS
+    switch ($data['action']) {
+        case 'alert':
+            $surreal->query('UPDATE table_name SET field = $value WHERE id = $id', [
+                'id' => $data['id'],
+                'value' => 1,
+            ]);
+            // Add "->exec()", if you want saving right now 
+            // $queue->wait  execute this query on loop
+        break;
+    }
+});
+
+// can use
+// $surreal->live('table_name' ... for all table event
+
+$surreal->liveQuery('SELECT * FROM table_name WHERE field > $max', [ 'max' => 10],
+    function ($action, $result) use($nats) {
+        switch ($action) {
+            case 'UPDATE':
+                $nats->pub("ON-YOUR-CUSTOM-EVENT", ['action' => 'alert', 'id' => $result['id']]);
+                // can be ->exec()
+                break;
+            default:
+                // no action  CLOSE, CREATE, CONNECT, DELETE
+                // use CONNECT - for saving queryUuid  for use liveListener or kill
+                break;
+        }
+    });
+
+$queue->registrySocket($surreal);
+$queue->registrySocket($nats);
+
+// Locked loop - and example max work time execute
+$queue->wait(fn($s) => (microtime(1) - $s < $max_work_time));
+```
+
