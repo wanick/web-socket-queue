@@ -22,6 +22,15 @@ class WebSocket
 
     private $options = [];
 
+    public function __construct($url, $options = [])
+    {
+        $options['url'] = $url;
+
+        if (!isset($options['logger'])) {
+            $options['logger'] = fn() => ([]);
+        }
+        $this->options = $options;
+    }
 
     /**
      * @return resource
@@ -105,12 +114,6 @@ class WebSocket
         return $data;
     }
 
-    public function __construct($url, $options = [])
-    {
-        $options['url'] = $url;
-        $this->options = $options;
-    }
-
     public function start()
     {
         $flags = STREAM_CLIENT_CONNECT;
@@ -169,6 +172,8 @@ class WebSocket
                 $headers
             )
         ) . "\r\n\r\n";
+
+        $this->options['logger']('debug', ['send http request connect']);
         fwrite($this->socket, $header);
 
         // Get server response header (terminated with double CR+LF).
