@@ -3,7 +3,9 @@
 namespace Wanick\WebSocketQueue;
 
 use Exception;
-
+/**
+ * comment test
+ */
 class WebSocket
 {
     private static $opcodes = [
