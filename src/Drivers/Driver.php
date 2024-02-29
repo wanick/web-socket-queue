@@ -11,6 +11,7 @@ abstract class Driver
         'socket-connection-timeout' => 10,
     ];
     private $ws = null;
+    private $options = [];
 
     public function __construct($url, $options = [])
     {
@@ -24,11 +25,18 @@ abstract class Driver
             unset($preparedOptions['ssl-verify']);
         }
 
-        $client = new WebSocket($url, array_merge($preparedOptions, $options));
+        if (!isset($options['logger'])) {
+            $options['logger'] = fn() => ([]);
+        }
+
+        $this->options = array_merge($preparedOptions, $options);
+        $client = new WebSocket($url, $this->options);
         $client->onLoop([$this, 'loop']);
         $client->onMessage([$this, 'message']);
 
         $this->setClient($client);
+        
+        $this->options['logger']('debug', ['make driver']);
     }
 
     /**
