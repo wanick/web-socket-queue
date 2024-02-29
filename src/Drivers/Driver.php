@@ -61,6 +61,8 @@ abstract class Driver
                 $this->ws->readPacket();
             }
             !$blocked && $this->ws->loop();
+            
+            $this->options['logger']('debug', ['driver', static::class]);
         } while ($this->loop() && $blocked);
     }
 
