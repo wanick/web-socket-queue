@@ -88,9 +88,16 @@ class WebSocket
                     throw new Exception($message);
                 }
             }
-            if ($buffer === false) {
-                $read = strlen($data);
-                throw new Exception("Broken frame, read {$read} of stated {$length} bytes.");
+            if ($buffer === false || strcmp($buffer, '') == 0) {
+                $code = socket_last_error($this->socket);
+                socket_clear_error($this->socket);
+    
+                if ($code == SOCKET_EAGAIN) {
+                    // Nothing to read from non-blocking socket, try again later...
+                } else {
+                    $read = strlen($data);
+                    throw new Exception("Broken frame, read {$read} of stated {$length} bytes.");
+                }
             }
             $data .= $buffer;
             $read = strlen($data);

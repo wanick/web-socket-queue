@@ -29,10 +29,5 @@
         "psr-4": {
             "Wanick\\WebSocketQueue\\Test\\": "tests/"
         }
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.4-beta"
-        }
     }
 }
