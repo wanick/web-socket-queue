@@ -88,11 +88,18 @@ class SurrealDriver extends Driver
      */
     public function signin(array $auth, $callback = null, $blocked =  true)
     {
-        if (!isset($auth['ns'])) {
-            $auth['ns'] = $this->ns;
-        }
-        if (!isset($auth['db'])) {
-            $auth['db'] = $this->db;
+        $version = null;
+        $this->version(function ($v) use (&$version) {
+            $version = preg_replace('@.*?(\d+\.\d+\.\d+).*?@', '$1', $v);
+        }, true)->exec();
+
+        if (!$version || !version_compare($version, '2.0.0', '>=')) {
+            if (!isset($auth['ns'])) {
+                $auth['ns'] = $this->ns;
+            }
+            if (!isset($auth['db'])) {
+                $auth['db'] = $this->db;
+            }
         }
         return $this->addTask('signin', [$auth], $callback, $blocked);
     }
@@ -125,7 +132,7 @@ class SurrealDriver extends Driver
      */
     public function liveListener($queryUuid, $callback = null)
     {
-        if(isset($this->queue[$queryUuid])) {
+        if (isset($this->queue[$queryUuid])) {
             $this->queue[$queryUuid]['watchers'][] = $callback;
         }
         return $this;
@@ -185,6 +192,14 @@ class SurrealDriver extends Driver
     public function info($callback = null, $blocked = true)
     {
         return $this->addTask('info', null, $callback, $blocked);
+    }
+
+    /**
+     * version Returns version information about the database/server
+     */
+    public function version($callback = null, $blocked = true)
+    {
+        return $this->addTask('version', null, $callback, $blocked);
     }
 
     // TODOs
