@@ -163,6 +163,7 @@ class WebSocket
             'Upgrade'               => 'websocket',
             'Sec-WebSocket-Key'     => $key,
             'Sec-WebSocket-Version' => '13',
+            'Sec-WebSocket-Protocol' => 'soap, wamp'
         ];
         $header = "GET {$path} HTTP/1.1\r\n" . implode(
             "\r\n",
