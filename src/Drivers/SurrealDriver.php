@@ -10,8 +10,18 @@ class SurrealDriver extends Driver
     private $ns = '';
     private $db = '';
 
+    private $version;
+
     private $counter = 0;
     private $queue = [];
+
+    public function __construct($url, $options = []) {
+        parent::__construct($url, $options);
+
+        $this->version(function ($v) {
+            $this->version = preg_replace('@.*?(\d+\.\d+\.\d+).*?@', '$1', $v);
+        }, true)->exec();
+    }
 
     public function loop()
     {
@@ -88,12 +98,7 @@ class SurrealDriver extends Driver
      */
     public function signin(array $auth, $callback = null, $blocked =  true)
     {
-        $version = null;
-        $this->version(function ($v) use (&$version) {
-            $version = preg_replace('@.*?(\d+\.\d+\.\d+).*?@', '$1', $v);
-        }, true)->exec();
-
-        if (!$version || !version_compare($version, '2.0.0', '>=')) {
+        if (!$this->version || !version_compare($this->version, '2.0.0', '>=')) {
             if (!isset($auth['ns'])) {
                 $auth['ns'] = $this->ns;
             }
@@ -233,5 +238,9 @@ class SurrealDriver extends Driver
             unset($this->queue[$id]['data']['params']);
         }
         return $this;
+    }
+
+    public function getVersion() {
+        return $this->version;
     }
 }
