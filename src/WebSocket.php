@@ -59,11 +59,11 @@ class WebSocket
     {
         $this->listeners[] = $callback;
     }
-    public function onLoop($callback, $millisecond = 1000)
+    public function onLoop($callback, $microsecond = 1000)
     {
         $this->loops[] = [
             'last' => 0,
-            'interval' => $millisecond,
+            'interval' => $microsecond,
             'callback' => $callback
         ];
     }
