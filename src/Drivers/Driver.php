@@ -42,9 +42,9 @@ abstract class Driver
     /**
      * Add loop function with minimal interval call
      */
-    public function onLoop($callback, $millisecond = 1000000)
+    public function onLoop($callback, $microsecond = 1000000)
     {
-        $this->ws->onLoop($callback, $millisecond);
+        $this->ws->onLoop($callback, $microsecond);
         return $this;
     }
 
