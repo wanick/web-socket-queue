@@ -1,13 +1,12 @@
-# Web Socket Queue lib
-
+# PHP WebSocket Asynchronous Queue library
 <h3>
     Usage with <a href="https://surrealdb.com#gh-dark-mode-only" target="_blank">
         <img src="https://raw.githubusercontent.com/surrealdb/surrealdb/main/img/white/text.svg" height="15" alt="SurrealDB">
     </a>
 </h3>
 
+# Examples
 ```php
-
 use Wanick\WebSocketQueue\Drivers\SurrealDriver;
 
 // link to RCP SurrealDB
@@ -26,7 +25,6 @@ if ($surreal) {
         print_r($result[0]);
     })->exec();
 }
-
 ```
 
 <h3>

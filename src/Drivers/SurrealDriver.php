@@ -51,16 +51,18 @@ class SurrealDriver extends Driver
             $this->getWs()->send(1, "", 'pong', true);
         } else {
             $payload = json_decode($payload, true);
-            if (!isset($payload['id'])) {
-
+            if (!isset($payload['id']) && isset($payload['result']['id'])) {
                 // Тут дергаем callbacks по LIVE
                 $task = $this->queue[$payload['result']['id']];
                 $result = $payload['result'];
-                foreach ($task['watchers'] as $callback) {
+                $watcher = isset($task['watchers']) ? $task['watchers'] : [];
+                foreach ($watcher as $callback) {
                     $callback($result['action'], $result['result']);
                 }
             } else {
-                if (!isset($this->queue[$payload['id']])) {
+                if (!isset($payload['id'])) {
+                    // Не понятная ошибка откуда она прилетает...
+                } else if (!isset($this->queue[$payload['id']])) {
                     throw new Exception('Что за ошибка не понятно!');
                 } else {
                     $task = &$this->queue[$payload['id']];
