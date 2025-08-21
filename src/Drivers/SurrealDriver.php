@@ -23,7 +23,7 @@ class SurrealDriver extends Driver
         }, true)->exec();
     }
 
-    public function loop()
+    public function loop($blocked = false)
     {
         foreach ($this->queue as &$task) {
             if ($task['status'] === 'new') {
@@ -38,7 +38,7 @@ class SurrealDriver extends Driver
                 $task['status'] = $task['blocked'] ? 'await' : 'sent';
             }
 
-            if ($task['status'] === 'await') {
+            if ($task['status'] === 'await' || $blocked) {
                 return true;
             }
         }
