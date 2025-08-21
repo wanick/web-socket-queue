@@ -63,7 +63,7 @@ abstract class Driver
             !$blocked && $this->ws->loop();
             
             $this->options['logger']('debug', ['driver', static::class]);
-        } while ($this->loop() && $blocked);
+        } while ($this->loop($blocked));
     }
 
     public function getWs(): WebSocket
@@ -76,5 +76,5 @@ abstract class Driver
         $this->ws = $client;
     }
     
-    abstract public function loop();
+    abstract public function loop($blocked = false);
 }

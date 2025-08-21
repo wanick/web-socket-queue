@@ -16,7 +16,7 @@ class NatsDriver extends Driver
         parent::__construct($url, $options);
     }
 
-    public function loop()
+    public function loop($blocked = false)
     {
         foreach ($this->queue as $i => &$task) {
             if ($task['status'] === 'new') {
